@@ -22,19 +22,26 @@ async function fetchData(position) {
   // API URLs with coordinates
   const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
   const airQualityUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+  const locationUrl = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`;
 
   try {
     // Fetch both weather and air quality data
-    const [weatherRes, airQualityRes] = await Promise.all([fetch(weatherUrl), fetch(airQualityUrl)]);
+    const [weatherRes, airQualityRes, locationRes] = await Promise.all([fetch(weatherUrl), fetch(airQualityUrl),  fetch(locationUrl),]);
     const weatherData = await weatherRes.json();
     const airQualityData = await airQualityRes.json();
+    const locationData = await locationRes.json();
 
     // Update the dashboard with fetched data
+    updateLocationLabel(locationData);
     updateSummary(weatherData, airQualityData);
     updateCharts(airQualityData, weatherData);
   } catch (error) {
     alert("Error fetching data: " + error.message);
   }
+}
+function updateLocationLabel(locationData) {
+  const locationName = locationData[0]?.name || "Unknown Location";
+  document.getElementById("location-label").textContent = locationName;
 }
 
 // Function to update the dashboard based on location-specific data
@@ -43,7 +50,6 @@ function updateSummary(weatherData, airQualityData) {
   document.getElementById("temperature").textContent = `${weatherData.main.temp}°C`;
   document.getElementById("humidity").textContent = `${weatherData.main.humidity}%`;
   document.getElementById("pressure").textContent = weatherData.main.pressure;
-  document.getElementById("location").textContent = weatherData.main.location;
 
   // Display air quality information with dynamic messages
   const pm25 = airQualityData.list[0].components.pm2_5;
