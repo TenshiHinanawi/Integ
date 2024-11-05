@@ -50,6 +50,7 @@ function updateSummary(weatherData, airQualityData) {
   document.getElementById("temperature").textContent = `${weatherData.main.temp}°C`;
   document.getElementById("humidity").textContent = `${weatherData.main.humidity}%`;
   document.getElementById("pressure").textContent = weatherData.main.pressure;
+  document.getElementById("weather").textContent = weatherData.weather[0].description;
 
   // Display air quality information with dynamic messages
   const pm25 = airQualityData.list[0].components.pm2_5;
